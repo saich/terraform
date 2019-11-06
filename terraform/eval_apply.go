@@ -399,10 +399,13 @@ func (n *EvalMaybeTainted) Eval(ctx EvalContext) (interface{}, error) {
 		return nil, nil
 	}
 
-	if change.Action == plans.Create {
-		// If there are errors during a _create_ then the object is
+	switch change.Action {
+	case plans.Create, plans.Delete:
+		// If there are errors during a _create_, then the object is
 		// in an undefined state, and so we'll mark it as tainted so
-		// we can try again on the next run.
+		// we can try again on the next run. If there are errors during a
+		// _delete_, then we mark as tainted to ensure that the object is still
+		// queued for deletion, as it may have been tainted previously.
 		//
 		// We don't do this for other change actions because errors
 		// during updates will often not change the remote object at all.

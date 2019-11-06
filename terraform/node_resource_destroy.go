@@ -251,6 +251,12 @@ func (n *NodeDestroyResourceInstance) EvalTree() EvalNode {
 						Error:          &err,
 					},
 				},
+				&EvalMaybeTainted{
+					Addr:   addr.Resource,
+					State:  &state,
+					Change: &changeApply,
+					Error:  &err,
+				},
 				&EvalWriteState{
 					Addr:           addr.Resource,
 					ProviderAddr:   n.ResolvedProvider,
