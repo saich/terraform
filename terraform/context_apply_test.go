@@ -7307,7 +7307,7 @@ func TestContext2Apply_errorDestroy(t *testing.T) {
 
 	actual := strings.TrimSpace(state.String())
 	expected := strings.TrimSpace(`
-test_thing.foo:
+test_thing.foo: (tainted)
   ID = baz
   provider = provider.test
 `) // test_thing.foo is still here, even though provider returned no new state along with its error
