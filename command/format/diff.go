@@ -1071,8 +1071,10 @@ func ctySequenceDiff(old, new []cty.Value) []*plans.Change {
 	var oldI, newI, lcsI int
 	for oldI < len(old) || newI < len(new) || lcsI < len(lcs) {
 		for oldI < len(old) && (lcsI >= len(lcs) || !old[oldI].RawEquals(lcs[lcsI])) {
-			isObjectDiff := old[oldI].Type().IsObjectType() && (newI >= len(new) || new[newI].Type().IsObjectType())
-			if isObjectDiff && newI < len(new) {
+			// Doesn't match in LCS => This object is either modified or deleted.
+			// If it is a delete, new will match with LCS at current index,
+			// else its safe to assume it is a Modify action.
+			if newI < len(new) && (lcsI >= len(lcs) || !new[newI].RawEquals(lcs[lcsI])) {
 				ret = append(ret, &plans.Change{
 					Action: plans.Update,
 					Before: old[oldI],
